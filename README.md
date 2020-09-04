@@ -1,4 +1,4 @@
-# fruitshelflifefinal
+# Detection of Artificially Ripened Fruit using Transfer Learning
 
 A new Flutter application.
 
