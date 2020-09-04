@@ -5,6 +5,7 @@ import 'package:flutter/rendering.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:tflite/tflite.dart';
 import 'package:device_apps/device_apps.dart';
+import 'package:tflite_flutter/tflite_flutter.dart';
 
 void main() => runApp(MaterialApp(
   home: MyApp(),
@@ -153,7 +154,10 @@ class _MyAppState extends State<MyApp> {
     classifyImage(image2);
   }
 
+
+
   classifyImage(File image) async {
+
     var output = await Tflite.runModelOnImage(
       path: image.path,
       numResults: 2,
@@ -168,10 +172,26 @@ class _MyAppState extends State<MyApp> {
   }
 
   loadModel() async {
+
     await Tflite.loadModel(
       model: "assets/model_unquant.tflite",
       labels: "assets/labels.txt",
     );
+    set_backend();
+  }
+  set_backend() async{
+
+    final gpuDelegateV2 = GpuDelegateV2(
+        options: GpuDelegateOptionsV2(
+          false,
+          TfLiteGpuInferenceUsage.fastSingleAnswer,
+          TfLiteGpuInferencePriority.minLatency,
+          TfLiteGpuInferencePriority.auto,
+          TfLiteGpuInferencePriority.auto,
+        ));
+
+    var interpreterOptions = InterpreterOptions()..addDelegate(gpuDelegateV2);
+    final interpreter = await Interpreter.fromAsset('model_unquant.tflite', options: interpreterOptions);
   }
 
   @override
@@ -180,3 +200,5 @@ class _MyAppState extends State<MyApp> {
     super.dispose();
   }
 }
+
+
