@@ -47,7 +47,7 @@ class _MyAppState extends State<MyApp> {
             )
           ),
         ),
-        backgroundColor: Colors.teal,
+        backgroundColor: Colors.deepPurple,
 
       ),
       body: _loading
@@ -97,7 +97,7 @@ class _MyAppState extends State<MyApp> {
                 child: FloatingActionButton(
                   onPressed: clickImage,
                   child: Icon(Icons.camera_alt),
-                  backgroundColor: Colors.teal,
+                  backgroundColor: Colors.deepPurple,
                 ),
               ),),
 
@@ -106,7 +106,7 @@ class _MyAppState extends State<MyApp> {
               child: FloatingActionButton(
                 onPressed: pickImage,
                 child: Icon(Icons.add_photo_alternate),
-                backgroundColor: Colors.teal,
+                backgroundColor: Colors.deepPurple,
               ),
             ),
             Padding(
@@ -116,7 +116,7 @@ class _MyAppState extends State<MyApp> {
                 child: FloatingActionButton(
                   onPressed: thermalImage,
                   child: Icon(Icons.camera),
-                  backgroundColor: Colors.teal,
+                  backgroundColor: Colors.deepPurple,
                 ),
               ),
             ),
