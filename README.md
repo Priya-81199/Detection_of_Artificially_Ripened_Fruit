@@ -330,7 +330,7 @@ After the code completion, run the app on emulator/Andriod Device
 
 Here are some screenshots of the working app.
 
-<a href="https://ibb.co/H749xKJ"><img src="https://i.ibb.co/xhLrf24/Screenshot-1599841488.png" alt="Screenshot-1599841488" border="0" width = 350 ></a>
+<a href="https://ibb.co/H749xKJ"><img src="https://i.ibb.co/xhLrf24/Screenshot-1599841488.png" alt="Screenshot-1599841488" border="0" width = 350></a>
 <a href="https://ibb.co/XYnwYfv"><img src="https://i.ibb.co/MBzXBy3/Screenshot-1599841516.png" alt="Screenshot-1599841516" border="0" width = 350></a>
 <a href="https://ibb.co/zhJdQ8Y"><img src="https://i.ibb.co/Y7ZgPDM/Screenshot-1599841536.png" alt="Screenshot-1599841536" border="0" width = 350></a>
 <a href="https://ibb.co/mcmKL7R"><img src="https://i.ibb.co/NyXq8zF/Screenshot-1599841561.png" alt="Screenshot-1599841561" border="0" width = 350></a>
