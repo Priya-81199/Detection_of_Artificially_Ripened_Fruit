@@ -7,6 +7,8 @@ import 'package:tflite/tflite.dart';
 import 'package:device_apps/device_apps.dart';
 import 'package:tflite_flutter/tflite_flutter.dart';
 
+var time_in_ms = 0;
+
 void main() => runApp(MaterialApp(
   home: MyApp(),
   debugShowCheckedModeBanner: false,
@@ -71,13 +73,15 @@ class _MyAppState extends State<MyApp> {
               ),
               _outputs != null
                   ? Positioned(
-                left:60,
-                bottom: 180,
+                left:10,
+                bottom: 10,
                     child: Text(
-                "${_outputs[0]["label"]}",
+                    "${noClass()} : "
+                    "${_outputs[0]["confidence"]}\n"
+                    "$time_in_ms ms",
                 style: TextStyle(
-                  color: Colors.white60,
-                    fontSize: 80.0,
+                  color: Colors.white,
+                    fontSize: 25.0,
                     fontFamily: 'Mono',
                     background: Paint()..color = Colors.black45,
                 ),
@@ -124,6 +128,18 @@ class _MyAppState extends State<MyApp> {
         )
     );
   }
+  noClass (){
+    _loading = true;
+    var label;
+    if(_outputs[0]["confidence"] > 0.90)
+      label = _outputs[0]["label"];
+    else
+      label = "No_Class";
+    _loading = false;
+    return label;
+
+  }
+
 
   pickImage() async {
     var image = await ImagePicker.pickImage(source: ImageSource.gallery);
@@ -133,6 +149,7 @@ class _MyAppState extends State<MyApp> {
       _image = image;
     });
     classifyImage(image);
+
   }
   clickImage() async {
     var image1 = await ImagePicker.pickImage(source: ImageSource.camera);
@@ -158,13 +175,17 @@ class _MyAppState extends State<MyApp> {
 
   classifyImage(File image) async {
 
+    final stopwatch = await Stopwatch()..start();
     var output = await Tflite.runModelOnImage(
       path: image.path,
       numResults: 2,
       threshold: 0.5,
       imageMean: 127.5,
       imageStd: 127.5,
+
     );
+    time_in_ms = stopwatch.elapsedMilliseconds;
+    print('classified in ${time_in_ms}');
     setState(() {
       _loading = false;
       _outputs = output;
@@ -172,7 +193,6 @@ class _MyAppState extends State<MyApp> {
   }
 
   loadModel() async {
-
     await Tflite.loadModel(
       model: "assets/model_unquant.tflite",
       labels: "assets/labels.txt",
