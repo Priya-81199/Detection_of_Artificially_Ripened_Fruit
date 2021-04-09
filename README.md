@@ -8,7 +8,7 @@
 
 
 ## Dataset
-The dataset is organised in **2 folders**. (Artifical and Natural)
+The dataset is organised in **2 folders** (Artifical and Natural).
 This dataset contains **11,000 images of Bananas**.  
 
 
@@ -173,7 +173,7 @@ After the code completion, run the app on emulator/Andriod Device
 ## Result
 
 Here are some screenshots of the working app.
-<a href="https://ibb.co/VV6kjG7"><img src="https://i.ibb.co/6YQqnS3/Whats-App-Image-2021-03-18-at-4-45-20-PM-1.jpg" alt="Whats-App-Image-2021-03-18-at-4-45-20-PM-1" border="0"></a>
+
 <a href="https://ibb.co/tZFkRnc"><img src="https://i.ibb.co/yh7G2K5/Whats-App-Image-2021-03-18-at-4-45-20-PM.jpg" alt="Whats-App-Image-2021-03-18-at-4-45-20-PM" border="0"></a>
 <a href="https://ibb.co/RBW9s3x"><img src="https://i.ibb.co/cCd1Z6G/Whats-App-Image-2021-03-18-at-5-04-54-PM.jpg" alt="Whats-App-Image-2021-03-18-at-5-04-54-PM" border="0"></a>
 
