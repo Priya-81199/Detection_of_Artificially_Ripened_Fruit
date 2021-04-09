@@ -6,163 +6,11 @@
 
 **Flutter** is Google's SDK for crafting beautiful, fast user experiences for mobile, web and desktop from a **single codebase**. Flutter works with existing code, is used by developers and organizations around the world, and is *free* and *open source*.
 
-In this project we will develop a Flutter app that classifies 5 types of flowers using Transfer Learning in TensorFlow and shows the result to the user.![enter image description here](https://miro.medium.com/max/1020/1*qp84aqUzlD5dEVK9nTrj4Q.png)
-
-**Currently due to unavailability of fruit ripening dataset we will use sample flower dataset.*
-
 
 ## Dataset
-The dataset is organised in **5 folders**. Each folder contains flowers of one kind. The folders are named **sunflowers, daisy, dandelion, tulips and roses**. The data is hosted in a public bucket on *Google Cloud Storage.*
+The dataset is organised in **2 folders**. (Artifical and Natural)
+This dataset contains **11,000 images of Bananas**.  
 
-This dataset contains **3670 images of flowers**.  
-![enter image description here](https://lh4.googleusercontent.com/8_jOXRV3Y2vBT72C1IdUz04pfSqWyP5Dkq5NvIFwn9fNhfC2XknnHKhCHvd-hISiEVNrLmNflYwPOHgpYcE1rwCA7Xqpw4HnbMfLimFOs-zl7nuA2OxdxhMi5tOlnDG_WCy4_Cer)![enter image description here](https://lh3.googleusercontent.com/og36ajmNenXx1SRP95HIGXZ7GlF06QoySLNpHFbgQD_bqUi7hBss84l4-M-90y0L49mvVosiPbFY5izlPHFDNh0o-t-jC2wun_DQvel1e4nGx8wWBPlJ7xCHlAQZpWzT7wEI_Yt4)![enter image description here](https://lh5.googleusercontent.com/jXellwfrqrvoGPJeMQM29EyaZfaAC3dO2rF1cmTlZxBG2IyfVNHFEZsDVEciGXVgBFaQJZkJ4Ss5kRAG8qwK6zUuGrI_Pgus0SqVbvLYIGpiyIniQ6qz9q9nl1-szrEBzT4IjMaK)![enter image description here](https://lh5.googleusercontent.com/J-lCrbQC6EQDulmGbhiUO1cg4LcaYqV-BOsGfN_UvnaFLHyzGBHsio1mUqYx_wR_KTDaa6_crVfjdqtyeQoQjcwN4lFSAw0Yp7JqMiB-yFvSm7YHIEBIlKAAFkVe2GhGBMgvqSLW)![enter image description here](https://lh3.googleusercontent.com/rsCQsIY26YvQpm67UfUX_yDGfE2JrBTg86EFfLZBJKpocOh3zVMwvbIjc_Z82HByLmok_TgYZ6RyLXoGmTAnKyKpGDsTY_7vHHP4Zivhn-YwucLD4H6aSw94qbdW6lAhWna1ClH1)![enter image description here](https://lh5.googleusercontent.com/z1PsDwOjFUhR16wAs_9CSrEsq_y479ZASzQUKti620KMraMGXRqUXtCl8sMGq6Hou5XuLjN1crBB747mMk_o-YW-u0K1a7UYoOPG_85EnN0p3guJsDTD3NqkGOS4iMCkudwhDTer)
-```
-gs://flowers-public/sunflowers/5139971615_434ff8ed8b_n.jpg
-gs://flowers-public/daisy/8094774544_35465c1c64.jpg
-gs://flowers-public/sunflowers/9309473873_9d62b9082e.jpg
-gs://flowers-public/dandelion/19551343954_83bb52f310_m.jpg
-gs://flowers-public/dandelion/14199664556_188b37e51e.jpg
-gs://flowers-public/tulips/4290566894_c7f061583d_m.jpg
-gs://flowers-public/roses/3065719996_c16ecd5551.jpg
-gs://flowers-public/dandelion/8168031302_6e36f39d87.jpg
-gs://flowers-public/sunflowers/9564240106_0577e919da_n.jpg
-gs://flowers-public/daisy/14167543177_cd36b54ac6_n.jpg
-```
-### Loading Dataset faster ( Rather than importing image one by one)
-### **The TFRecord file format**
-
-Tensorflow's preferred file format for storing data is the  [protobuf](https://developers.google.com/protocol-buffers/)-based TFRecord format. Other serialization formats would work too but you can load a dataset from TFRecord files directly by writing:
-
-```
-filenames = tf.io.gfile.glob(FILENAME_PATTERN)
-dataset = tf.data.TFRecordDataset(filenames)
-dataset = dataset.map(...) # do the TFRecord decoding here - see below
-```
-
-For optimal performance, it is recommended to use the following more complex code to read from multiple TFRecord files at once. This code will read from N files in parallel and disregard data order in favor of reading speed.
-
-```
-AUTO = tf.data.experimental.AUTOTUNE
-ignore_order = tf.data.Options()
-ignore_order.experimental_deterministic = False
-
-filenames = tf.io.gfile.glob(FILENAME_PATTERN)
-dataset = tf.data.TFRecordDataset(filenames, num_parallel_reads=AUTO)
-dataset = dataset.with_options(ignore_order)
-dataset = dataset.map(...) # do the TFRecord decoding here - see below
-```
-
-### **TFRecord cheat sheet**
-
-Three types of data can be stored in TFRecords:  **byte strings**  (list of bytes), 64 bit  **integers** and 32 bit  **floats**. They are always stored as lists, a single data element will be a list of size 1. You can use the following helper functions to store data into TFRecords.
-
-**writing byte strings**
-
-```
-# warning, the input is a list of byte strings, which are themselves lists of bytes
-def _bytestring_feature(list_of_bytestrings):
-  return tf.train.Feature(bytes_list=tf.train.BytesList(value=list_of_bytestrings))
-```
-
-**writing integers**
-
-```
-def _int_feature(list_of_ints): # int64
-  return tf.train.Feature(int64_list=tf.train.Int64List(value=list_of_ints))
-```
-
-**writing floats**
-
-```
-def _float_feature(list_of_floats): # float32
-  return tf.train.Feature(float_list=tf.train.FloatList(value=list_of_floats))
-```
-
-**writing a TFRecord**, using the helpers above
-
-```
-# input data in my_img_bytes, my_class, my_height, my_width, my_floats
-with tf.python_io.TFRecordWriter(filename) as out_file:
-  feature = {
-    "image": _bytestring_feature([my_img_bytes]), # one image in the list
-    "class": _int_feature([my_class]),            # one class in the list
-    "size": _int_feature([my_height, my_width]),  # fixed length (2) list of ints
-    "float_data": _float_feature(my_floats)       # variable length  list of floats
-  }
-  tf_record = tf.train.Example(features=tf.train.Features(feature=feature))
-  out_file.write(tf_record.SerializeToString())
-```
-
-To read data from TFRecords, you must first declare the layout of the records you have stored. In the declaration, you can access any named field as a fixed length list or a variable length list:
-
-**reading from TFRecords**
-
-```
-def read_tfrecord(data):
-  features = {
-    # tf.string = byte string (not text string)
-    "image": tf.io.FixedLenFeature([], tf.string), # shape [] means scalar, here, a single byte string
-    "class": tf.io.FixedLenFeature([], tf.int64),  # shape [] means scalar, i.e. a single item
-    "size": tf.io.FixedLenFeature([2], tf.int64),  # two integers
-    "float_data": tf.io.VarLenFeature(tf.float32)  # a variable number of floats
-  }
-
-  # decode the TFRecord
-  tf_record = tf.parse_single_example(data, features)
-
-  # FixedLenFeature fields are now ready to use
-  sz = tf_record['size']
-
-  # Typical code for decoding compressed images
-  image = tf.image.decode_jpeg(tf_record['image'], channels=3)
-
-  # VarLenFeature fields require additional sparse.to_dense decoding
-  float_data = tf.sparse.to_dense(tf_record['float_data'])
-
-  return image, sz, float_data
-
-# decoding a tf.data.TFRecordDataset
-dataset = dataset.map(read_tfrecord)
-# now a dataset of triplets (image, sz, float_data)
-```
-
-Useful code snippets:
-
-**reading single data elements**
-
-```
-tf.io.FixedLenFeature([], tf.string)   # for one byte string
-tf.io.FixedLenFeature([], tf.int64)    # for one int
-tf.io.FixedLenFeature([], tf.float32)  # for one float
-```
-
-**reading fixed size lists of elements**
-
-```
-tf.io.FixedLenFeature([N], tf.string)   # list of N byte strings
-tf.io.FixedLenFeature([N], tf.int64)    # list of N ints
-tf.io.FixedLenFeature([N], tf.float32)  # list of N floats
-```
-
-**reading a variable number of data items**
-
-```
-tf.io.VarLenFeature(tf.string)   # list of byte strings
-tf.io.VarLenFeature(tf.int64)    # list of ints
-tf.io.VarLenFeature(tf.float32)  # list of floats
-```
-
-A VarLenFeature returns a sparse vector and an additional step is required after decoding the TFRecord:
-
-```
-dense_data = tf.sparse.to_dense(tf_record['my_var_len_feature'])
-```
-
-It is also possible to have optional fields in TFRecords. If you specify a default value when reading a field, then the default value is returned instead of an error if the field is missing.
-
-```
-tf.io.FixedLenFeature([], tf.int64, default_value=0) # this field is optional
-```
 
 ## Training the model
 ### Transfer Learning
@@ -223,10 +71,6 @@ tflite_model = converter.convert()
     tflite_model_file.write_bytes(tflite_model)
 
 TensorFlow Lite supports reducing precision of values from full floating point to half-precision floats (float16) or 8-bit integers. There are trade-offs in model size and accuracy for each choice, and some operations have optimized implementations for these reduced precision types.
-
-
-
-
 
 
 ## Add TensorFlow Lite to the Flutter app
@@ -329,17 +173,12 @@ After the code completion, run the app on emulator/Andriod Device
 ## Result
 
 Here are some screenshots of the working app.
-
-<a href="https://ibb.co/Pxy9yWG"><img src="https://i.ibb.co/R2KBK6T/Screenshot-1599841488.png" alt="Screenshot-1599841488" border="0" width = 350></a>
-<a href="https://ibb.co/XYnwYfv"><img src="https://i.ibb.co/MBzXBy3/Screenshot-1599841516.png" alt="Screenshot-1599841516" border="0" width = 350></a>
-<a href="https://ibb.co/zhJdQ8Y"><img src="https://i.ibb.co/Y7ZgPDM/Screenshot-1599841536.png" alt="Screenshot-1599841536" border="0" width = 350></a>
-<a href="https://ibb.co/mcmKL7R"><img src="https://i.ibb.co/NyXq8zF/Screenshot-1599841561.png" alt="Screenshot-1599841561" border="0" width = 350></a>
-<a href="https://ibb.co/wY8FVVg"><img src="https://i.ibb.co/zNCTppx/Screenshot-1599841573.png" alt="Screenshot-1599841573" border="0" width = 350></a>
-<a href="https://ibb.co/Fwm1Q1z"><img src="https://i.ibb.co/qs78H8p/Screenshot-1599841595.png" alt="Screenshot-1599841595" border="0" width = 350></a>
-<a href="https://ibb.co/nsQ5Pjz"><img src="https://i.ibb.co/C5VTPQh/Screenshot-1599841611.png" alt="Screenshot-1599841611" border="0" width = 350 ></a>
+<a href="https://ibb.co/VV6kjG7"><img src="https://i.ibb.co/6YQqnS3/Whats-App-Image-2021-03-18-at-4-45-20-PM-1.jpg" alt="Whats-App-Image-2021-03-18-at-4-45-20-PM-1" border="0"></a>
+<a href="https://ibb.co/tZFkRnc"><img src="https://i.ibb.co/yh7G2K5/Whats-App-Image-2021-03-18-at-4-45-20-PM.jpg" alt="Whats-App-Image-2021-03-18-at-4-45-20-PM" border="0"></a>
+<a href="https://ibb.co/RBW9s3x"><img src="https://i.ibb.co/cCd1Z6G/Whats-App-Image-2021-03-18-at-5-04-54-PM.jpg" alt="Whats-App-Image-2021-03-18-at-5-04-54-PM" border="0"></a>
 
 
 ## Conclusion
 
-Thus we have successfully executed the Flower Vision app using Flutter.
+Thus we have successfully predicted whether the banana is artificially ripened or not.
 
